@@ -7,6 +7,15 @@ float speed=0.02; //vitesse joueur
 float vitessePoints=0.1;
 
 
+
+void displayScore(int score)
+{
+    system("clear");
+    std::cout<<"******* Jeux du Point ********"<<std::endl<<std::endl;
+    std::cout<<"Votre score: "<<score<<std::endl;
+}
+
+
 int main(int argc, const char** argv) {
 
     bool gameOver=false;
@@ -24,6 +33,8 @@ int main(int argc, const char** argv) {
     Direction dirPlayer = Droite;
 
     std::vector <point> tabPoints;
+
+    int score = 0;
 
     tickPlayer = clock();
     tempsPoints = clock();
@@ -88,6 +99,10 @@ int main(int argc, const char** argv) {
 
                 if(x>=800 || x<0 || y>=800 || y<0)
                     gameOver=true;
+
+                score+=1;
+
+                displayScore(score);
 
                 tickPlayer = clock();
             }
