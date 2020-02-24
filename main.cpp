@@ -113,10 +113,22 @@ int main(int argc, const char** argv) {
 
             }
 
+            int x=player.getRect().getPosition().x;
+            int y=player.getRect().getPosition().y;
+
+
             window.draw(player.getRect());
 
-            for(int i=0;i<tabPoints.size();i++)
+            for(int i=0;i<tabPoints.size();i++) //on verifie que le joueur ne touche pas un point rouge et on dissine les points
+            {
+                int xPoint = tabPoints[i].getRect().getPosition().x;
+                int yPoint = tabPoints[i].getRect().getPosition().y;
+
+
+                if(x==xPoint && y==yPoint)
+                    gameOver=true;
                 window.draw(tabPoints[i].getRect());
+            }
 
             window.display();
             window.clear();
