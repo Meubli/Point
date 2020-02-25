@@ -2,9 +2,9 @@
 
 int wLargeur=40;
 int wHauteur=40;
-float speed=0.02; //vitesse joueur
+sf::Time speed = sf::milliseconds(300); //vitesse joueur
 
-float vitessePoints=0.1;
+sf::Time vitessePoints= sf::milliseconds(1000);  //allure de pop des points
 
 
 
@@ -20,7 +20,7 @@ int main(int argc, const char** argv) {
 
     bool gameOver=false;
 
-    clock_t tickPlayer,tempsPoints;
+   
 
     sf::RenderWindow window;
 
@@ -36,8 +36,7 @@ int main(int argc, const char** argv) {
 
     int score = 0;
 
-    tickPlayer = clock();
-    tempsPoints = clock();
+    sf::Clock tickPlayer,tempsPoints;
 
     while(window.isOpen())
     {   
@@ -59,22 +58,22 @@ int main(int argc, const char** argv) {
                     switch (event.key.code)
                     {
                     case sf::Keyboard::Z:
-                        
+                        if(player.getDirection()!=Bas)
                             player.setDirection(Haut);
                         break;
                     
                     case sf::Keyboard::S:
-                       
+                        if((player.getDirection()!=Haut))
                             player.setDirection(Bas);
                         break;
                     
                     case sf::Keyboard::D:
-                        
+                        if(player.getDirection()!=Gauche)
                             player.setDirection(Droite);
                         break;
                     
                     case sf::Keyboard::Q:
-                        
+                        if(player.getDirection()!=Droite)
                             player.setDirection(Gauche);
                         break;
                     
@@ -87,9 +86,9 @@ int main(int argc, const char** argv) {
                 }
             }
 
+            sf::Time temps1 = tickPlayer.getElapsedTime();
             
-            
-            if( (float)(clock()-tickPlayer)/CLOCKS_PER_SEC>speed) // on actualise la position du joueur
+            if( temps1>speed) // on actualise la position du joueur
             {
                 player.actu();
 
@@ -104,11 +103,13 @@ int main(int argc, const char** argv) {
 
                 displayScore(score);
 
-                tickPlayer = clock();
+                tickPlayer.restart();
             }
 
 
-            if( (float)(clock()-tempsPoints)/CLOCKS_PER_SEC>vitessePoints) // on ajoute de nouveau points
+            sf::Time temps2 = tempsPoints.getElapsedTime();
+
+            if( temps2>vitessePoints) // on ajoute de nouveau points
             {
                 int xRand = std::rand()%wLargeur*20;
                 int yRand = std::rand()%wHauteur*20;
@@ -124,7 +125,7 @@ int main(int argc, const char** argv) {
 
                 tabPoints.push_back(p);
 
-                tempsPoints = clock();
+                tempsPoints.restart();
 
             }
 
@@ -134,7 +135,7 @@ int main(int argc, const char** argv) {
 
             window.draw(player.getRect());
 
-            for(int i=0;i<tabPoints.size();i++) //on verifie que le joueur ne touche pas un point rouge et on dissine les points
+            for(int i=0;i<tabPoints.size();i++) //on verifie que le joueur ne touche pas un point rouge et on déssine les points
             {
                 int xPoint = tabPoints[i].getRect().getPosition().x;
                 int yPoint = tabPoints[i].getRect().getPosition().y;

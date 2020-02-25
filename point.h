@@ -54,3 +54,4 @@ class joueur : public point
     Direction _direction;
 
 };
+
