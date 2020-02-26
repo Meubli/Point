@@ -12,6 +12,11 @@ enum Direction
     Droite=0, Gauche, Haut, Bas
 };
 
+enum typeBonus 
+{
+    Score =0, Lent, Flash, Hulk, Armageddon, Normal, Reset
+};
+
 class point
 {
     public:
@@ -48,10 +53,42 @@ class joueur : public point
 
     Direction getDirection() const;
 
+    typeBonus bonus() const;
+
+    void setBonus(typeBonus);
+
 
     private:
 
     Direction _direction;
 
+    typeBonus _bonus;
+
 };
 
+
+
+class bonus : public point 
+{
+    public:
+
+    bonus(int,int);
+    bonus();
+    ~bonus(){}
+
+    typeBonus getType() const;
+
+    void setDrawable(bool);
+    bool isDrawable() const;
+
+    void setRandomType();
+
+    void setPosition(int,int);
+
+    private:
+
+    typeBonus _type;
+
+    bool _drawable;
+
+};

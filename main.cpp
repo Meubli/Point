@@ -7,20 +7,18 @@ sf::Time speed = sf::milliseconds(300); //vitesse joueur
 sf::Time vitessePoints= sf::milliseconds(1000);  //allure de pop des points
 
 
+#define VITESSESCORE 500
+#define VITESSEJOUEUR 300
 
-void displayScore(int score)
-{
-    system("clear");
-    std::cout<<"******* Jeux du Point ********"<<std::endl<<std::endl;
-    std::cout<<"Votre score: "<<score<<std::endl;
-}
+
 
 
 int main(int argc, const char** argv) {
 
     bool gameOver=false;
 
-   
+    sf::Time vitesseScore = sf::milliseconds(VITESSESCORE);
+    sf::Time speed = sf::milliseconds(VITESSEJOUEUR);
 
     sf::RenderWindow window;
 
@@ -36,7 +34,11 @@ int main(int argc, const char** argv) {
 
     int score = 0;
 
-    sf::Clock tickPlayer,tempsPoints;
+    sf::Clock tickPlayer,tempsPoints,entre2Bonus,compteurBonus,clockScore;
+
+    bonus pointBonus;
+
+    int hulkIndex=-1;
 
     while(window.isOpen())
     {   
@@ -77,7 +79,8 @@ int main(int argc, const char** argv) {
                             player.setDirection(Gauche);
                         break;
                     
-                    
+                    case sf::Keyboard::A:
+                        tabPoints.clear();
 
                     default:
                         break;
@@ -92,6 +95,9 @@ int main(int argc, const char** argv) {
             {
                 player.actu();
 
+                if(player.bonus()==Normal)
+                    player.setColor(sf::Color(254,254,254));
+
 
                 int x=player.getRect().getPosition().x;
                 int y=player.getRect().getPosition().y;
@@ -99,11 +105,21 @@ int main(int argc, const char** argv) {
                 if(x>=800 || x<0 || y>=800 || y<0)
                     gameOver=true;
 
-                score+=1;
-
-                displayScore(score);
-
                 tickPlayer.restart();
+            }
+
+            //gestion du Score
+
+            sf::Time tempsScore = clockScore.getElapsedTime();
+            if( tempsScore>vitesseScore)
+            {
+                score+=5;
+
+                system("clear");
+                std::cout<<"******* Jeux du Point ********"<<std::endl<<std::endl;
+                std::cout<<"Votre score: "<<score<<std::endl;
+
+                clockScore.restart();
             }
 
 
@@ -111,8 +127,27 @@ int main(int argc, const char** argv) {
 
             if( temps2>vitessePoints) // on ajoute de nouveau points
             {
-                int xRand = std::rand()%wLargeur*20;
-                int yRand = std::rand()%wHauteur*20;
+                bool test=false;
+                int xRand ;
+                int yRand;
+
+                while(!test)
+                {
+                    test=true;
+
+                    xRand = std::rand()%wLargeur*20;
+                    yRand = std::rand()%wHauteur*20;
+
+                    if(xRand==player.getRect().getPosition().x  &&  yRand==player.getRect().getPosition().y)
+                        test=false;
+
+
+                        // le nouveau point rouge ne pop pas sur un bonus
+                    if(pointBonus.isDrawable() && xRand==pointBonus.getRect().getPosition().x && yRand==pointBonus.getRect().getPosition().y )
+                        test=false;
+                }
+
+                
 
                 while(xRand==player.getRect().getPosition().x  &&  yRand==player.getRect().getPosition().y)
                 {
@@ -129,8 +164,109 @@ int main(int argc, const char** argv) {
 
             }
 
+
+            sf::Time tempsEntre2Bonus = entre2Bonus.getElapsedTime();
+
+            if( tempsEntre2Bonus.asSeconds() > 10 && !pointBonus.isDrawable()) // fin du bonus
+            {
+                speed = sf::milliseconds(VITESSEJOUEUR);
+
+                player.setBonus(Normal);
+
+                hulkIndex = -1;
+
+                vitesseScore = sf::milliseconds(VITESSESCORE);
+
+                pointBonus.setRandomType();
+
+                int xRand,yRand;
+
+                bool test=false;
+
+                int t=1;
+
+                while(!test) // le bonus ne pop pas sur le joueur ou sur un point rouge
+                {
+                    xRand = std::rand()%wLargeur*20;
+                    yRand = std::rand()%wHauteur*20;
+
+
+                    test=true;
+
+                    for(int i=0;i<tabPoints.size();i++)
+                    {
+                        int xPoint = tabPoints[i].getRect().getPosition().x;
+                        int yPoint = tabPoints[i].getRect().getPosition().y;
+
+                        if(xRand==xPoint && yRand==yPoint)
+                            test=false;
+                    }
+
+                    if(xRand==player.getRect().getPosition().x && yRand==player.getRect().getPosition().y)
+                        test=false;
+
+
+                }
+
+                pointBonus.setPosition(xRand,yRand);
+
+                pointBonus.setDrawable(true);
+
+                compteurBonus.restart();  // on remet le compteurBonus à 0 pour afficher le Bonus 20sec
+            }
+
+
+            sf::Time tempsPopBonus = compteurBonus.getElapsedTime();
+            if( pointBonus.isDrawable() && tempsPopBonus.asSeconds()>20) // si le temps de pop du bonus est dépassé
+            {
+                pointBonus.setDrawable(false);
+                entre2Bonus.restart();
+            }
+
+            if(pointBonus.isDrawable())
+                window.draw(pointBonus.getRect());
+
+
             int x=player.getRect().getPosition().x;
             int y=player.getRect().getPosition().y;
+
+            int xB=pointBonus.getRect().getPosition().x;
+            int yB=pointBonus.getRect().getPosition().y;
+
+            if( x==xB && y==yB && pointBonus.isDrawable()) // si le joueur touche le bonus
+            {
+                if(pointBonus.getType() == Flash)
+                {
+                    vitesseScore = sf::milliseconds(VITESSESCORE/2);
+                    speed = speed/(float)2;
+                    player.setBonus(Flash);
+                    player.setColor(sf::Color(250,250,0));
+                }
+
+                if(pointBonus.getType() == Lent)
+                {
+                    player.setBonus(Lent);
+                    speed = speed*(float)2;
+                    player.setColor(sf::Color(0,250,250));
+
+                    
+                } 
+                if( pointBonus.getType() == Hulk)
+                {
+                    player.setBonus(Hulk);
+                    player.setColor(sf::Color(30,150,50));
+                }
+
+                if( pointBonus.getType() == Reset)
+                {
+                    player.setBonus(Reset);
+                    tabPoints.clear();
+                }
+
+
+                pointBonus.setDrawable(false);
+                entre2Bonus.restart();
+            }
 
 
             window.draw(player.getRect());
@@ -142,9 +278,27 @@ int main(int argc, const char** argv) {
 
 
                 if(x==xPoint && y==yPoint)
-                    gameOver=true;
-                window.draw(tabPoints[i].getRect());
+                {
+                    if(player.bonus()==Hulk)
+                        hulkIndex=i;
+                    else
+                        gameOver=true;
+                }
+
+                if(i!=hulkIndex)
+                    window.draw(tabPoints[i].getRect());
             }
+
+            if(hulkIndex!=-1)
+            {
+                tabPoints.erase( tabPoints.begin()+ hulkIndex );
+
+                score+=10;
+                hulkIndex=-1;
+            }
+
+
+            
 
             window.display();
             window.clear();
