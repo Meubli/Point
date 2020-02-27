@@ -96,23 +96,21 @@ bonus::bonus(int x, int y): point(x,y)
 
 void bonus::setRandomType()
 {
-    int t=std::rand()%100;   // on assigne aléatoirement un type de bonus              
+    int t=std::rand()%100;   // on assigne aléatoirement un type de bonus
 
-    if(t<5)
-        _type = Armageddon; // 5%%
-    else if(5<=t && t<10)         
-        _type=Reset;        // 5%%
-    else if( 10<=t && t<20)
-        _type=Hulk;         // 10%
-    else if( 20<=t && t<40)
-        _type=Flash;        // 20%
-    else if( 40<=t && t<60)
-        _type=Halte;        // 20%
-    else if( 60<=t && t<80) 
-        _type=Score;        // 20%
-    else if( 80<=t && t<100) 
-        _type=Lent;         // 19%
+    if(t<10)
+        _type = Armageddon; // 10%
+    else if( 10<=t && t<30)
+        _type=Hulk;         // 20%
+    else if( 30<=t && t<60)
+        _type=Flash;        // 30%
     
+    else if( 60<=t && t<80)
+        _type=Score;        // 20%
+    else if( 80<=t && t<99)
+        _type=Lent;
+    else if( t==99)
+        _type=Reset;
 }
 
 

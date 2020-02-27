@@ -14,7 +14,7 @@ enum Direction
 
 enum typeBonus 
 {
-    Score =0, Lent, Flash, Hulk, Armageddon, Normal, Reset, Halte
+    Score =0, Lent, Flash, Hulk, Armageddon, Normal, Reset
 };
 
 class point
