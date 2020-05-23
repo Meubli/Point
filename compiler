@@ -1,0 +1,3 @@
+#/bin/bash
+
+g++ -Wall main.cpp myGui.cpp point.cpp -o point -lsfml-graphics -lsfml-window -lsfml-system
