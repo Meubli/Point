@@ -98,21 +98,16 @@ void bonus::setRandomType()
 {
     int t=std::rand()%100;   // on assigne aléatoirement un type de bonus
 
-    if(t<10)
-        _type = Armageddon; // 10%
-    else if( 10<=t && t<30)
+    if( 0<=t && t<20)
         _type=Hulk;         // 20%
-    else if( 30<=t && t<60)
-        _type=Flash;        // 30%
+    else if( 20<=t && t<40)
+        _type=Flash;        // 20%
     
-    else if( 60<=t && t<80)
-        _type=Score;        // 20%
-    else if( 80<=t && t<99)
-        _type=Lent;
-    else if( t==99)
-        _type=Reset;
+    else if( 40<=t && t<70)
+        _type=Score;        // 30%
+    else if( 70<=t && t<99)
+        _type=Lent;         // 2
 }
-
 
 
 typeBonus bonus::getType() const{return _type;}
