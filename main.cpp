@@ -481,7 +481,7 @@ int main(int argc, const char** argv) {
 
                             playerText.setString(playerInput);
                         }
-                        else if( event.text.unicode < 128)
+                        else if( event.text.unicode < 128 || event.text.unicode > 64 )
                         {
 
                             playerInput +=event.text.unicode;
