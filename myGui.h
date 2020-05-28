@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <ctime>
+#include <assert.h>
 
 
 class Menu
@@ -72,3 +73,20 @@ void enregistrer(std::string, int score, int occupation, int nBonus);
 char chiffrer(char);
 
 char dechiffrer(char);
+
+void getData(std::vector<std::string> *, std::vector<int> *,  std::vector<int> *, std::vector<int> * tBonus);
+
+void epurer(std::vector<std::string> *, std::vector<int> *,  std::vector<int> *, std::vector<int> * tBonus);
+
+void trierNom(std::vector<std::string> *, std::vector<int> *,  std::vector<int> *, std::vector<int> * tBonus, int ordre=1);
+
+void trierScore(std::vector<std::string> *, std::vector<int> *,  std::vector<int> *, std::vector<int> * tBonus, int ordre=1);
+void trierTaux(std::vector<std::string> *, std::vector<int> *,  std::vector<int> *, std::vector<int> * tBonus, int ordre=1);
+void trierBonus(std::vector<std::string> *, std::vector<int> *,  std::vector<int> *, std::vector<int> * tBonus, int ordre=1);
+
+bool stringLessThan(std::string a, std::string b);
+
+void permuter2lignes(std::vector<std::string> *, std::vector<int> *,  std::vector<int> *, std::vector<int> * tBonus, int a, int b);
+
+void actualiserTableau(std::vector<std::string> *, std::vector<int> *,  std::vector<int> *, std::vector<int> * tBonus, std::vector<std::vector<sf::Text>>*);
+

@@ -3,9 +3,7 @@
 
 int wLargeur=40;
 int wHauteur=40;
-sf::Time speed = sf::milliseconds(300); //vitesse joueur
 
-sf::Time vitessePoints= sf::milliseconds(1000);  //allure de pop des points
 
 
 #define VITESSESCORE 500
@@ -30,6 +28,8 @@ void ajoutBordure(std::vector<point> *tab,int x,int y)
 
 
 int main(int argc, const char** argv) {
+
+    sf::Time vitessePoints= sf::milliseconds(1000);  //allure de pop des points
 
     bool gameOver=false;
 
@@ -118,6 +118,8 @@ int main(int argc, const char** argv) {
 
     int score = 0;
     int nBonus=0;
+    int delta=5;
+    int taux=0;
 
 
     bonus pointBonus;
@@ -167,10 +169,10 @@ int main(int argc, const char** argv) {
                         if((player.getDirection()!=Haut))
                             player.setDirection(Bas);
                         break;
-                    
+                   
                     case sf::Keyboard::Right:
                         if(player.getDirection()!=Gauche)
-                            player.setDirection(Droite);
+                           player.setDirection(Droite);
                         break;
                     case sf::Keyboard::D:
                         if(player.getDirection()!=Gauche)
@@ -218,10 +220,13 @@ int main(int argc, const char** argv) {
 
             //gestion du Score
 
+
+            delta=5+(float)taux/3*2;
+
             sf::Time tempsScore = clockScore.getElapsedTime();
             if( tempsScore>vitesseScore)
             {
-                score+=5;
+                score+=delta;
                 tScore.setString(std::to_string(score));
                 clockScore.restart();
             }
@@ -234,6 +239,9 @@ int main(int argc, const char** argv) {
                 bool test=false;
                 int xRand ;
                 int yRand;
+
+                int xP=player.getRect().getPosition().x;
+                int yP=player.getRect().getPosition().y;
 
                 while(!test)
                 {
@@ -256,15 +264,19 @@ int main(int argc, const char** argv) {
                             test=false;
                     }
 
+                    if((xRand==xP+20 && yRand==yP+20) || ( xRand==xP+20 && yRand==yP) || ( xRand==xP && yRand==yP+20))
+                        test=false;
+                    
+                    if((xRand==xP-20 && yRand==yP-20) || ( xRand==xP-20 && yRand==yP) || ( xRand==xP && yRand==yP-20))
+                        test=false;
+
+                    if( (xRand==xP+20 && yRand==yP-20) || (xRand==xP-20 && yRand==yP+20))
+                        test=false;
+
                 }
 
                 
 
-                while(xRand==player.getRect().getPosition().x  &&  yRand==player.getRect().getPosition().y)
-                {
-                    xRand = std::rand()%wLargeur*20+origine.x;
-                    yRand = std::rand()%wHauteur*20+origine.y;
-                }
 
                 point p(xRand,yRand);
                 p.setColor(sf::Color(250,0,0));
@@ -426,13 +438,13 @@ int main(int argc, const char** argv) {
             {
                 tabPoints.erase( tabPoints.begin()+ hulkIndex );
 
-                score+=100;
+                score+=100+taux*10;
                 hulkIndex=-1;
             }
 
 
             //                      on affiche le taux d'occupation
-            int taux=(int)(((float)tabPoints.size()-164)/1600*100);
+            taux=(int)(((float)tabPoints.size()-164)/1600*100);
 
             occupationText.setString(std::to_string(taux)+" %");
             window.draw(occupationText);
@@ -493,6 +505,7 @@ int main(int argc, const char** argv) {
                                 gameOver=false;
                                 score=0;
                                 nBonus=0;
+                                speed = sf::milliseconds(300); //vitesse joueur
                                 tabPoints.clear();
                                 ajoutBordure(&tabPoints, origine.x, origine.y);
 

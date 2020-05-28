@@ -1,5 +1,6 @@
 #include "myGui.h"
 
+using namespace std;
 
 
 Menu::Menu(sf::RenderWindow &window): _window(window)
@@ -47,7 +48,7 @@ void Menu::setHover(int n)
 
     if(_selectedItemIndex>=0)
     {
-        _menuText[_selectedItemIndex].setCharacterSize(30);
+        _menuText[_selectedItemIndex].setCharacterSize(50);
         _menuText[_selectedItemIndex].setFillColor(sf::Color::White);
     }
 
@@ -64,7 +65,7 @@ void Menu::setHover(int n)
         {
             if((float)tickHover.getElapsedTime().asMilliseconds()<(float)j/transition*_speedHover.asMilliseconds())
             {
-                _menuText[n].setCharacterSize(30+j/transition*10);
+                _menuText[n].setCharacterSize(50+j/transition*10);
 
 
 
@@ -189,7 +190,7 @@ void afficherMenu(sf::RenderWindow &window, int largeur, int hauteur)
 
     text.setPosition(sf::Vector2f( largeur*9/20,hauteur/4));
 
-    text.setCharacterSize(40);
+    text.setCharacterSize(60);
 
     text.setStyle(sf::Text::Bold);
 
@@ -201,7 +202,7 @@ void afficherMenu(sf::RenderWindow &window, int largeur, int hauteur)
 
     text.setFillColor(sf::Color::White);
 
-    text.setCharacterSize(30);
+    text.setCharacterSize(50);
 
     menu.addText(text);
 
@@ -212,7 +213,7 @@ void afficherMenu(sf::RenderWindow &window, int largeur, int hauteur)
 
     text.setPosition(sf::Vector2f( largeur*9/20,hauteur/4*3));
 
-    text.setCharacterSize(30);
+    text.setCharacterSize(50);
 
     menu.addText(text);
 
@@ -285,6 +286,8 @@ void afficherMenu(sf::RenderWindow &window, int largeur, int hauteur)
     }
 }
 
+
+
 void afficherScores(sf::RenderWindow &window, int largeur, int hauteur)
 {
 
@@ -305,7 +308,7 @@ void afficherScores(sf::RenderWindow &window, int largeur, int hauteur)
     text.setString("Nom");
     text.setFillColor(sf::Color::Red);
     text.setPosition(sf::Vector2f(largeur/6, hauteur/15));
-    text.setCharacterSize(40);
+    text.setCharacterSize(60);
     
     menu.addText(text);
 
@@ -313,7 +316,7 @@ void afficherScores(sf::RenderWindow &window, int largeur, int hauteur)
     text.setString("Score");
     text.setFillColor(sf::Color::White);
     text.setPosition(sf::Vector2f(largeur*2/6, hauteur/15));
-    text.setCharacterSize(30);
+    text.setCharacterSize(50);
 
     menu.addText(text);
 
@@ -334,6 +337,75 @@ void afficherScores(sf::RenderWindow &window, int largeur, int hauteur)
 
     bool ouvert=true;
 
+    vector<string> tNom;
+    vector<int> tScore;
+    vector<int> tBonus;
+    vector<int> tTaux;
+
+    getData(&tNom, &tScore, &tTaux, &tBonus);
+
+
+    epurer(&tNom, &tScore, &tTaux, &tBonus);
+
+
+    trierNom(&tNom, &tScore, &tTaux, &tBonus);
+    
+
+    
+    vector<vector<sf::Text>> tabText;
+
+    sf::Vector2f origineTab(largeur/6, hauteur/6);
+
+    for(int i=0;i<tNom.size() && i<28;i++)
+    {
+
+        vector<sf::Text> ligneText;
+
+        sf::Text nom;
+        nom.setFont(font);
+        nom.setFillColor(sf::Color::White);
+        nom.setCharacterSize(25);
+        nom.setPosition(sf::Vector2f(origineTab.x, origineTab.y + i*(hauteur-origineTab.y)/30));
+        nom.setString(tNom[i]);
+
+        ligneText.push_back(nom);
+
+        sf::Text score;
+        score.setFont(font);
+        score.setFillColor(sf::Color::White);
+        score.setCharacterSize(25);
+        score.setPosition(sf::Vector2f(largeur*2/6, origineTab.y + i*(hauteur-origineTab.y)/30));
+        score.setString(to_string(tScore[i]));
+
+
+        ligneText.push_back(score);
+
+
+
+        sf::Text taux;
+        taux.setFont(font);
+        taux.setFillColor(sf::Color::White);
+        taux.setCharacterSize(25);
+        taux.setPosition(sf::Vector2f(largeur*3/6, origineTab.y + i*(hauteur-origineTab.y)/30));
+        taux.setString(to_string(tTaux[i])+" %");
+
+
+        ligneText.push_back(taux);
+
+
+        sf::Text bonus;
+        bonus.setFont(font);
+        bonus.setFillColor(sf::Color::White);
+        bonus.setCharacterSize(25);
+        bonus.setPosition(sf::Vector2f(largeur*4/6, origineTab.y + i*(hauteur-origineTab.y)/30));
+        bonus.setString(to_string(tBonus[i]));
+
+
+        ligneText.push_back(bonus);
+        tabText.push_back(ligneText);
+
+    }
+
     while(ouvert){
 
         sf::Event event;
@@ -341,7 +413,7 @@ void afficherScores(sf::RenderWindow &window, int largeur, int hauteur)
         {
             if(event.type == sf::Event::Closed) 
                 window.close() ;
-            
+
             if(event.type == sf::Event::KeyPressed)
                 switch (event.key.code)
                 {
@@ -354,6 +426,10 @@ void afficherScores(sf::RenderWindow &window, int largeur, int hauteur)
                     case sf::Keyboard::Enter:
                         if(menu.getItemSelected()==4)
                             ouvert=false;
+                        break;
+                    case sf::Keyboard::Escape:
+                        ouvert=false;
+                        break;
                     default:
                         break;
                 }
@@ -366,7 +442,6 @@ void afficherScores(sf::RenderWindow &window, int largeur, int hauteur)
                 {
                     if(menu.click(event.mouseButton.x,event.mouseButton.y))
                     {
-                        
                         if(menu.getItemSelected()==4)
                             ouvert=false;
                     }
@@ -374,7 +449,39 @@ void afficherScores(sf::RenderWindow &window, int largeur, int hauteur)
             }
         }
 
+        if(menu.getItemSelected()==0)
+        {
+
+            trierNom(&tNom, &tScore, &tTaux, &tBonus);
+        }
+        else if( menu.getItemSelected()==1)
+        {
+            trierScore(&tNom, &tScore, &tTaux, &tBonus);
+
+        }
+        else if(menu.getItemSelected()==2)
+        {
+            
+            trierTaux(&tNom, &tScore, &tTaux, &tBonus);
+        }
+        else if(menu.getItemSelected()==3)
+        {
+
+            trierBonus(&tNom, &tScore, &tTaux, &tBonus);
+        }
+
+        actualiserTableau(&tNom, &tScore, &tTaux, &tBonus, &tabText);
+
         menu.draw();
+
+        for(int i=0;i<tabText.size();i++)
+        {
+            for(int j=0;j<tabText[i].size();j++)
+            {
+
+                window.draw(tabText[i][j]);
+            }
+        }
 
         window.display();
         window.clear();
@@ -434,4 +541,240 @@ char dechiffrer(char a)
         a+=26;
     }
     return a;
+}
+
+void actualiserTableau(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::vector<int> * tTaux, std::vector<int> * tBonus, vector<vector<sf::Text>> * tabText)
+{
+
+    for(int i=0; i<tabText->size();i++)
+    {
+        (*tabText)[i][0].setString((*tNom)[i]);
+        (*tabText)[i][1].setString(to_string((*tScore)[i]));
+        (*tabText)[i][2].setString(to_string((*tTaux)[i])+" %");
+        (*tabText)[i][3].setString(to_string((*tBonus)[i]));
+    }
+}
+
+void getData(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::vector<int> * tTaux, std::vector<int> * tBonus)
+{
+    ifstream fichier("score.txt");
+
+    string ligne;
+    char a;
+
+    if(fichier)
+    {
+        while(fichier.get(a))
+        {
+            ligne.push_back(a);
+        }
+    }
+    else
+        cout<<"Probleme avec le fichier score.txt"<<endl;
+
+    
+    for(int i=0;i<ligne.size();i++)
+    {
+        ligne[i]=dechiffrer(ligne[i]);
+    }
+
+    string nom;
+
+    string score;
+    string taux, bonus;
+    int colonne=0;
+
+
+    for( int i=0;i<ligne.size();i++)
+    {
+
+        if(ligne[i]=='\n')
+        {
+            colonne=0;
+
+            tNom->push_back(nom);
+            tScore->push_back(std::atoi(score.c_str()));
+            tTaux->push_back(std::atoi(taux.c_str()));
+            tBonus->push_back(std::atoi(bonus.c_str()));
+
+            nom.clear();
+            score.clear();
+            taux.clear();
+            bonus.clear();
+        }
+        else if(ligne[i]==32)
+            colonne++;
+        else if(colonne == 0)
+        {
+            if(ligne[i]>96)
+                ligne[i]-=32;
+
+            nom.push_back(ligne[i]);
+        }
+
+        else if( colonne == 1)
+        {
+            score.push_back(ligne[i]);
+        }
+        else if( colonne == 2)
+        {
+            taux.push_back(ligne[i]);
+        }
+        else if( colonne == 3)
+        {
+            bonus.push_back(ligne[i]);
+        }
+    }
+
+
+
+}
+
+
+bool stringLessThan(std::string a, std::string b)
+{
+    int s=a.size();
+
+    if(a.size()>b.size())
+    {
+        s=b.size();
+    }
+
+    for(int i=0;i<s;i++)
+    {
+        if(a[i]<b[i])
+        {
+            return true;
+        }
+        else if(a[i]>b[i])
+        {
+            return false;
+        }
+    }
+
+    if(a.size()<b.size())
+        return true;
+
+    return false;
+}
+
+
+void permuter2lignes(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::vector<int> * tTaux, std::vector<int> * tBonus,int indice, int indice2)
+{
+
+    string sTemp=(*tNom)[indice];
+    (*tNom)[indice]=(*tNom)[indice2];
+    (*tNom)[indice2]=sTemp;
+
+    int iTemp= (*tScore)[indice];
+    (*tScore)[indice]=(*tScore)[indice2];
+    (*tScore)[indice2]=iTemp;
+
+    iTemp= (*tTaux)[indice];
+    (*tTaux)[indice]=(*tTaux)[indice2];
+    (*tTaux)[indice2]=iTemp;
+
+
+    iTemp= (*tBonus)[indice];
+    (*tBonus)[indice]=(*tBonus)[indice2];
+    (*tBonus)[indice2]=iTemp;
+
+}
+
+
+void trierBonus(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::vector<int> * tTaux, std::vector<int> * tBonus,int ordre)
+{
+    for(int i=0;i<tBonus->size()-1;i++)
+    {
+        for(int j=0;j<tBonus->size()-1;j++)
+        {
+            if( ordre>0 && (*tBonus)[j]<(*tBonus)[j+1])
+            {
+                permuter2lignes(tNom, tScore, tTaux, tBonus, j, j+1);
+            }
+            else if( ordre<0 && (*tBonus)[j]>(*tBonus)[j+1])
+            {
+                permuter2lignes(tNom, tScore, tTaux, tBonus, j, j+1);
+            }
+        }
+    }
+}
+void trierTaux(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::vector<int> * tTaux, std::vector<int> * tBonus,int ordre)
+{
+    for(int i=0;i<tTaux->size()-1;i++)
+    {
+        for(int j=0;j<tTaux->size()-1;j++)
+        {
+            if( ordre>0 && (*tTaux)[j]<(*tTaux)[j+1])
+            {
+                permuter2lignes(tNom, tScore, tTaux, tBonus, j, j+1);
+            }
+            else if( ordre<0 && (*tTaux)[j]>(*tTaux)[j+1])
+            {
+                permuter2lignes(tNom, tScore, tTaux, tBonus, j, j+1);
+            }
+        }
+    }
+}
+
+void trierScore(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::vector<int> * tTaux, std::vector<int> * tBonus,int ordre)
+{
+    for(int i=0;i<tScore->size()-1;i++)
+    {
+        for(int j=0;j<tScore->size()-1;j++)
+        {
+            if( ordre>0 && (*tScore)[j]<(*tScore)[j+1])
+            {
+                permuter2lignes(tNom, tScore, tTaux, tBonus, j, j+1);
+            }
+            else if( ordre<0 && (*tScore)[j]>(*tScore)[j+1])
+            {
+                permuter2lignes(tNom, tScore, tTaux, tBonus, j, j+1);
+            }
+        }
+    }
+}
+
+void trierNom(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::vector<int> * tTaux, std::vector<int> * tBonus,int ordre)
+{
+
+    for(int i=0;i<tNom->size()-1;i++)
+    {
+        for(int j=0;j<tNom->size()-1  ;j++)
+        {
+            if(ordre >0 &&  !stringLessThan((*tNom)[j], (*tNom)[j+1]))
+            {
+                permuter2lignes(tNom, tScore, tTaux, tBonus, j, j+1);
+            }
+            else if( ordre<0 && stringLessThan((*tNom)[j], (*tNom)[j+1]))
+            {
+                permuter2lignes(tNom, tScore, tTaux, tBonus, j, j+1);
+            }
+
+        }
+    }
+
+}
+
+void epurer(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::vector<int> * tTaux, std::vector<int> * tBonus)
+{
+
+    for( int j=0;j<tNom->size();j++)
+    {
+        for(int i=1;i<tNom->size()-1;i++)
+        {
+            if( tNom->at(i)==tNom->at(j) && tScore->at(i)<tScore->at(j))
+            {
+                tNom->erase(tNom->begin()+i);
+                tScore->erase(tScore->begin()+i);
+                tTaux->erase(tTaux->begin()+i);
+                tBonus->erase(tBonus->begin()+i);
+
+                i--;
+                j--;
+            }
+        }
+
+    }
+
 }
