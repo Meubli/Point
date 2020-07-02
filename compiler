@@ -2,4 +2,5 @@
 
 g++ -Wall main.cpp myGui.cpp point.cpp -o point -lsfml-graphics -lsfml-window -lsfml-system
 g++ -Wall modifScore.cpp myGui.cpp -o modif -lsfml-graphics -lsfml-window -lsfml-system
+g++ -Wall ajouterScore.cpp myGui.cpp -o ajouter -lsfml-graphics -lsfml-window -lsfml-system
 

@@ -12,9 +12,9 @@ sf::Vector2i ecran = sf::Vector2i(sf::VideoMode::getDesktopMode().width,sf::Vide
 
 void ajoutBordure(std::vector<point> *tab,int x,int y)
 {
-    for(int i=-1;i<=wLargeur;i++)
+    for(int i=-1;i<=(int)wLargeur;i++)
     {
-        for(int j=-1;j<=wHauteur;j++)
+        for(int j=-1;j<=(int)wHauteur;j++)
         {
             if( i==-1 || i==wLargeur || j==wHauteur || j==-1 )
             {
@@ -51,9 +51,9 @@ int main(int argc, const char** argv) {
 
     tScore.setString(std::to_string(0));
 
-    tScore.setPosition(sf::Vector2f(ecran.x/2-35, 50));
+    tScore.setPosition(sf::Vector2f(ecran.x/100*48, ecran.y/100*2));
 
-    tScore.setCharacterSize(30);
+    tScore.setCharacterSize(45);
 
 
     //                                  Le texte pour "Votre nom"
@@ -72,6 +72,17 @@ int main(int argc, const char** argv) {
     playerText.setCharacterSize(30);
 
     playerText.setPosition(ecran.x/100*80, ecran.y/100*45);
+    
+    sf::Texture texture;
+    if(!texture.loadFromFile("img/arrow.png"))
+    {
+        std::cout<<"probleme image arrow.png"<<std::endl;
+    }
+
+    sf::Sprite arrow;
+    arrow.setTexture(texture);
+    arrow.setColor(sf::Color::White);
+    arrow.setPosition(sf::Vector2f(ecran.x/100*74, ecran.y/100*42));
 
 
 
@@ -82,8 +93,7 @@ int main(int argc, const char** argv) {
     sf::Text occupationText;
     occupationText.setFont(Tusj);
     occupationText.setCharacterSize(60);
-    occupationText.setPosition(ecran.x/100*15, ecran.y/100*50);
-    occupationText.setString("0");
+    occupationText.setPosition(ecran.x/100*15, ecran.y/100*20);
 
 
 
@@ -96,6 +106,15 @@ int main(int argc, const char** argv) {
     tBonus.setString("Aucun Bonus Pour Le Moment");
     tBonus.setPosition(sf::Vector2f(ecran.x/4*3, ecran.y/4));
     tBonus.setCharacterSize(30);
+
+    //                                     Liste des bonus
+
+    sf::Text liste;
+    liste.setFont(Tusj);
+    liste.setCharacterSize(40);
+    liste.setPosition(ecran.x*5/100, ecran.y*60/100);
+    liste.setString("    Liste des Bonus: \n\n\nBoost 30%\nRalentissement 20%\nHulk 20%\nFlash 20%\nReset 1%");
+    liste.setFillColor(sf::Color::White);
 
 
     sf::Time vitesseScore = sf::milliseconds(VITESSESCORE);
@@ -110,8 +129,6 @@ int main(int argc, const char** argv) {
 
 
     joueur player(Droite,origine.x+20*wLargeur/2,origine.y+20*wHauteur/2);
-
-    Direction dirPlayer = Droite;
 
     std::vector <point> tabPoints;
     ajoutBordure(&tabPoints, origine.x, origine.y);
@@ -138,6 +155,7 @@ int main(int argc, const char** argv) {
         {
             sf::Event event;
 
+            window.setMouseCursorVisible(false);
             
            
 
@@ -258,7 +276,7 @@ int main(int argc, const char** argv) {
                     if(pointBonus.isDrawable() && xRand==pointBonus.getRect().getPosition().x && yRand==pointBonus.getRect().getPosition().y )
                         test=false;
 
-                    for(int i=0;i<tabPoints.size();i++)  // les les points ne se superposent pas 
+                    for(int i=0;i<(int)tabPoints.size();i++)  // les les points ne se superposent pas 
                     {
                         if(xRand==tabPoints[i].getRect().getPosition().x && yRand==tabPoints[i].getRect().getPosition().y)
                             test=false;
@@ -306,8 +324,6 @@ int main(int argc, const char** argv) {
 
                 bool test=false;
 
-                int t=1;
-
                 while(!test) // le bonus ne pop pas sur le joueur ou sur un point rouge
                 {
                     xRand = std::rand()%wLargeur*20+origine.x;
@@ -316,7 +332,7 @@ int main(int argc, const char** argv) {
 
                     test=true;
 
-                    for(int i=0;i<tabPoints.size();i++)
+                    for(int i=0;i<(int)tabPoints.size();i++)
                     {
                         int xPoint = tabPoints[i].getRect().getPosition().x;
                         int yPoint = tabPoints[i].getRect().getPosition().y;
@@ -369,18 +385,17 @@ int main(int argc, const char** argv) {
 
                 if(pointBonus.getType() == Flash)
                 {
-                    vitesseScore = sf::milliseconds(VITESSESCORE/10);
-                    speed = speed/(float)2;
+                    vitesseScore = sf::milliseconds(VITESSESCORE/20);
                     player.setBonus(Flash);
                     player.setColor(sf::Color(250,250,0));
-                    tBonus.setString(L"     FLASH\n\n\n\nVotre vitesse est doublée\n\nVotre gain est multiplié par 10");
+                    tBonus.setString(L"     FLASH\n\n\n\nVotre vitesse est doublée\n\nVotre gain est multiplié par 20");
                 }
 
                 if(pointBonus.getType() == Lent)
                 {
                     vitesseScore = sf::milliseconds(VITESSESCORE/3);
                     player.setBonus(Lent);
-                    speed = speed*(float)2;
+                    speed=speed*(float)2;
                     player.setColor(sf::Color(0,250,250));
                     tBonus.setString(L"     RALENTISSEMENT\n\n\n\nVotre vitesse est divisé par 2\n\nVotre gain est triplé");
                 } 
@@ -397,7 +412,7 @@ int main(int argc, const char** argv) {
                     tabPoints.clear();
                     ajoutBordure(&tabPoints, origine.x, origine.y);
                     score*=2;
-                    tBonus.setString(L"     RESET\n\n\n\nUltime bonus, toute les briques sont effacées,\n vos points sont doublés");
+                    tBonus.setString(L"     RESET\n\n\n\nUltime bonus, toute les briques\n sont effacées,\n Votre Score est doublé");
                 }
                 if (pointBonus.getType() == Score)
                 {
@@ -416,7 +431,7 @@ int main(int argc, const char** argv) {
 
             window.draw(player.getRect());
 
-            for(int i=0;i<tabPoints.size();i++) //on verifie que le joueur ne touche pas un point rouge et on déssine les points
+            for(int i=0;i<(int)tabPoints.size();i++) //on verifie que le joueur ne touche pas un point rouge et on déssine les points
             {
                 int xPoint = tabPoints[i].getRect().getPosition().x;
                 int yPoint = tabPoints[i].getRect().getPosition().y;
@@ -438,8 +453,14 @@ int main(int argc, const char** argv) {
             {
                 tabPoints.erase( tabPoints.begin()+ hulkIndex );
 
-                score+=100+taux*10;
+                score+=100+taux*15;
                 hulkIndex=-1;
+            }
+
+            if( player.bonus() == Flash )
+            {
+
+                speed = sf::milliseconds(VITESSEJOUEUR/(1+tempsEntre2Bonus.asSeconds()/3));
             }
 
 
@@ -451,6 +472,7 @@ int main(int argc, const char** argv) {
             
             window.draw(tScore);
             window.draw(tBonus);
+            window.draw(liste);
             window.display();
             window.clear();
 
@@ -471,7 +493,7 @@ int main(int argc, const char** argv) {
 
                     if (event.type == sf::Event::TextEntered )
                     {
-                        if( event.text.unicode==8 && playerInput.getSize()!=0)
+                        if( event.text.unicode==8 && playerInput.getSize()>0)
                         {
                             std::string tString = std::string(playerInput);
                             tString.pop_back();
@@ -481,7 +503,7 @@ int main(int argc, const char** argv) {
 
                             playerText.setString(playerInput);
                         }
-                        else if( event.text.unicode < 128 || event.text.unicode > 64 )
+                        else if( ( event.text.unicode < 128 && event.text.unicode > 64 ) || event.text.unicode == 32 )
                         {
 
                             playerInput +=event.text.unicode;
@@ -500,12 +522,15 @@ int main(int argc, const char** argv) {
                                     int taux=(int)(((float)tabPoints.size()-164)/1600*100);
                                     enregistrer(std::string(playerText.getString()), score, taux, nBonus);
                                 }
+                                window.setMouseCursorVisible(true);
 
                                 afficherMenu(window, ecran.x, ecran.y);
                                 gameOver=false;
                                 score=0;
                                 nBonus=0;
+                                delta=5;
                                 speed = sf::milliseconds(300); //vitesse joueur
+                                vitesseScore = sf::milliseconds(VITESSESCORE);  // score par defaut
                                 tabPoints.clear();
                                 ajoutBordure(&tabPoints, origine.x, origine.y);
 
@@ -524,23 +549,25 @@ int main(int argc, const char** argv) {
                     }
                 }
 
-                for(int i=0;i<tabPoints.size();i++)
+                window.clear();
+
+                for(int i=0;i<(int)tabPoints.size();i++)
                 {
                     window.draw(tabPoints[i].getRect());
                 }
 
+
+
+
+
+
                 afficherGO(window, Tusj, ecran);
-
-
-
-
-
                 window.draw(playerText);
                 window.draw(occupationText);
                 window.draw(tScore);
                 window.draw(nameLabel);
+                window.draw(arrow);
                 window.display();
-                window.clear();
         }
     }
 

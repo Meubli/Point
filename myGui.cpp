@@ -16,7 +16,7 @@ Menu::Menu(sf::RenderWindow &window): _window(window)
 
 void Menu::draw()
 {
-    for(int i =0;i<_menuText.size();i++)
+    for(int i =0;i<(int)_menuText.size();i++)
     {
         _window.draw(_menuText[i]);
     }
@@ -24,7 +24,7 @@ void Menu::draw()
 
 void Menu::moveDown()
 {
-    if(_selectedItemIndex<_menuText.size()-1)
+    if(_selectedItemIndex<(int)_menuText.size()-1)
         setHover(_selectedItemIndex+1);
 
 }
@@ -61,7 +61,7 @@ void Menu::setHover(int n)
 
         float transition=90;
 
-        for(int j=0;j<=transition;j++)
+        for(int j=0;j<=(int)transition;j++)
         {
             if((float)tickHover.getElapsedTime().asMilliseconds()<(float)j/transition*_speedHover.asMilliseconds())
             {
@@ -84,7 +84,7 @@ void Menu::setHover(int n)
 }
 void Menu::hover(int x, int y)
 {
-    for(int i=0;i<_menuText.size();i++)
+    for(int i=0;i<(int)_menuText.size();i++)
     {
         sf::Text text = _menuText[i];
         sf::FloatRect rect = text.getGlobalBounds();
@@ -100,7 +100,7 @@ void Menu::hover(int x, int y)
 }
 bool Menu::click(int x, int y)
 {
-    for(int i=0;i<_menuText.size();i++)
+    for(int i=0;i<(int)_menuText.size();i++)
     {
         sf::Text text = _menuText[i];
         sf::FloatRect rect = text.getGlobalBounds();
@@ -356,7 +356,7 @@ void afficherScores(sf::RenderWindow &window, int largeur, int hauteur)
 
     sf::Vector2f origineTab(largeur/6, hauteur/6);
 
-    for(int i=0;i<tNom.size() && i<28;i++)
+    for(int i=0;i<(int)tNom.size() && i<28;i++)
     {
 
         vector<sf::Text> ligneText;
@@ -474,9 +474,9 @@ void afficherScores(sf::RenderWindow &window, int largeur, int hauteur)
 
         menu.draw();
 
-        for(int i=0;i<tabText.size();i++)
+        for(int i=0;i<(int)tabText.size();i++)
         {
-            for(int j=0;j<tabText[i].size();j++)
+            for(int j=0;j<(int)tabText[i].size();j++)
             {
 
                 window.draw(tabText[i][j]);
@@ -497,11 +497,20 @@ void enregistrer(std::string nom, int score, int occupation, int nBonus)
     if(monFlux)
     {
         std::string save;
+
+        for(int i=0;i<(int)nom.size();i++)
+        {
+            if(nom[i]==32)
+            {
+                nom[i]=95;
+            }
+        }
+
         save=nom+" "+std::to_string(score)+" "+std::to_string(occupation);
         save+=" "+std::to_string(nBonus)+"\n";
 
 
-        for(int i=0; i<save.size();i++)
+        for(int i=0; i<(int)save.size();i++)
         {
             save[i]=chiffrer(save[i]);
         }
@@ -546,7 +555,7 @@ char dechiffrer(char a)
 void actualiserTableau(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::vector<int> * tTaux, std::vector<int> * tBonus, vector<vector<sf::Text>> * tabText)
 {
 
-    for(int i=0; i<tabText->size();i++)
+    for(int i=0; i<(int)tabText->size();i++)
     {
         (*tabText)[i][0].setString((*tNom)[i]);
         (*tabText)[i][1].setString(to_string((*tScore)[i]));
@@ -573,7 +582,7 @@ void getData(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::v
         cout<<"Probleme avec le fichier score.txt"<<endl;
 
     
-    for(int i=0;i<ligne.size();i++)
+    for(int i=0;i<(int)ligne.size();i++)
     {
         ligne[i]=dechiffrer(ligne[i]);
     }
@@ -585,7 +594,7 @@ void getData(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::v
     int colonne=0;
 
 
-    for( int i=0;i<ligne.size();i++)
+    for( int i=0;i<(int)ligne.size();i++)
     {
 
         if(ligne[i]=='\n')
@@ -608,6 +617,8 @@ void getData(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::v
         {
             if(ligne[i]>96)
                 ligne[i]-=32;
+            else if( ligne[i]==95)
+                ligne[i]=32;
 
             nom.push_back(ligne[i]);
         }
@@ -640,7 +651,7 @@ bool stringLessThan(std::string a, std::string b)
         s=b.size();
     }
 
-    for(int i=0;i<s;i++)
+    for(int i=0;i<(int)s;i++)
     {
         if(a[i]<b[i])
         {
@@ -684,9 +695,9 @@ void permuter2lignes(std::vector<std::string> * tNom, std::vector<int> * tScore,
 
 void trierBonus(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::vector<int> * tTaux, std::vector<int> * tBonus,int ordre)
 {
-    for(int i=0;i<tBonus->size()-1;i++)
+    for(int i=0;i<(int)tBonus->size()-1;i++)
     {
-        for(int j=0;j<tBonus->size()-1;j++)
+        for(int j=0;j<(int)tBonus->size()-1;j++)
         {
             if( ordre>0 && (*tBonus)[j]<(*tBonus)[j+1])
             {
@@ -701,9 +712,9 @@ void trierBonus(std::vector<std::string> * tNom, std::vector<int> * tScore,  std
 }
 void trierTaux(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::vector<int> * tTaux, std::vector<int> * tBonus,int ordre)
 {
-    for(int i=0;i<tTaux->size()-1;i++)
+    for(int i=0;i<(int)tTaux->size()-1;i++)
     {
-        for(int j=0;j<tTaux->size()-1;j++)
+        for(int j=0;j<(int)tTaux->size()-1;j++)
         {
             if( ordre>0 && (*tTaux)[j]<(*tTaux)[j+1])
             {
@@ -719,9 +730,9 @@ void trierTaux(std::vector<std::string> * tNom, std::vector<int> * tScore,  std:
 
 void trierScore(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::vector<int> * tTaux, std::vector<int> * tBonus,int ordre)
 {
-    for(int i=0;i<tScore->size()-1;i++)
+    for(int i=0;i<(int)tScore->size()-1;i++)
     {
-        for(int j=0;j<tScore->size()-1;j++)
+        for(int j=0;j<(int)tScore->size()-1;j++)
         {
             if( ordre>0 && (*tScore)[j]<(*tScore)[j+1])
             {
@@ -738,9 +749,9 @@ void trierScore(std::vector<std::string> * tNom, std::vector<int> * tScore,  std
 void trierNom(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::vector<int> * tTaux, std::vector<int> * tBonus,int ordre)
 {
 
-    for(int i=0;i<tNom->size()-1;i++)
+    for(int i=0;i<(int)tNom->size()-1;i++)
     {
-        for(int j=0;j<tNom->size()-1  ;j++)
+        for(int j=0;j<(int)tNom->size()-1  ;j++)
         {
             if(ordre >0 &&  !stringLessThan((*tNom)[j], (*tNom)[j+1]))
             {
@@ -759,9 +770,9 @@ void trierNom(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::
 void epurer(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::vector<int> * tTaux, std::vector<int> * tBonus)
 {
 
-    for( int j=0;j<tNom->size();j++)
+    for( int j=0;j<(int)tNom->size();j++)
     {
-        for(int i=1;i<tNom->size()-1;i++)
+        for(int i=0;i<(int)tNom->size();i++)
         {
             if( tNom->at(i)==tNom->at(j) && tScore->at(i)<tScore->at(j))
             {

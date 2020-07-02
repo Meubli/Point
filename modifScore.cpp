@@ -14,14 +14,13 @@ int main()
         while(fScore.get(a))
         {
             ligne.push_back(a);
-            cout<<a;
         }
     }
     else
         cout<<"Probleme avec le fScore score.txt"<<endl;
 
     
-    for(int i=0;i<ligne.size();i++)
+    for(int i=0;i<(int)ligne.size();i++)
     {
         ligne[i]=dechiffrer(ligne[i]);
         
@@ -46,7 +45,7 @@ int main()
     int colonne=0;
 
 
-    for( int i=0;i<ligne.size();i++)
+    for( int i=0;i<(int)ligne.size();i++)
     {
 
         if(ligne[i]=='\n')
@@ -88,7 +87,7 @@ int main()
     }
 
 
-    for(int i=0;i<tNom->size();i++)
+    for(int i=0;i<(int)tNom->size();i++)
     {
         cout<<i<<" "<<(*tNom)[i]<<" "<<(*tScore)[i]<<endl;
         
@@ -102,21 +101,24 @@ int main()
 
     if(fichier)
     {
-        for(int i=0;i<tNom->size() && i!= indice;i++)
+        for(int i=0;i<(int)tNom->size();i++)
         {
-            std::string save;
-            save=(*tNom)[i]+" "+std::to_string((*tScore)[i])+" "+std::to_string((*tTaux)[i]);
-            save+=" "+std::to_string((*tBonus)[i])+"\n";
-
-
-            for(int i=0; i<save.size();i++)
+            if(i!=indice)
             {
-                save[i]=chiffrer(save[i]);
+                std::string save;
+                save=(*tNom)[i]+" "+std::to_string((*tScore)[i])+" "+std::to_string((*tTaux)[i]);
+                save+=" "+std::to_string((*tBonus)[i])+"\n";
+
+
+                for(int j=0; j<(int)save.size();j++)
+                {
+                    save[j]=chiffrer(save[j]);
+                }
+
+
+                fichier<<save;
+
             }
-
-
-            fichier<<save;
-
         }
 
         
