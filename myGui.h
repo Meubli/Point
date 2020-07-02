@@ -70,9 +70,9 @@ void afficherMenu(sf::RenderWindow &window,int,int);
 
 void enregistrer(std::string, int score, int occupation, int nBonus);
 
-char chiffrer(char);
+std::string encryptDecrypt(std::string toEncrypt); 
 
-char dechiffrer(char);
+void XORscore();
 
 void getData(std::vector<std::string> *, std::vector<int> *,  std::vector<int> *, std::vector<int> * tBonus);
 

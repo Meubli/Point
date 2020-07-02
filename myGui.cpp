@@ -489,8 +489,39 @@ void afficherScores(sf::RenderWindow &window, int largeur, int hauteur)
 
 }
 
+void XORscore()
+{
+
+    ifstream fichier("score.txt");
+
+    string text;
+    char a;
+
+    if(fichier)
+    {
+        while(fichier.get(a))
+        {
+
+
+            text.push_back(a);
+        }
+    }
+
+    fichier.close();
+
+    text=encryptDecrypt(text);
+
+    ofstream nFichier("score.txt");
+
+    if(nFichier)
+    {
+        nFichier<<text;
+    }
+}
+
 void enregistrer(std::string nom, int score, int occupation, int nBonus)
 {
+    XORscore();
 
     std::ofstream monFlux("score.txt", std::ios::app);
 
@@ -510,12 +541,6 @@ void enregistrer(std::string nom, int score, int occupation, int nBonus)
         save+=" "+std::to_string(nBonus)+"\n";
 
 
-        for(int i=0; i<(int)save.size();i++)
-        {
-            save[i]=chiffrer(save[i]);
-        }
-
-
         monFlux<<save;
 
         
@@ -524,32 +549,18 @@ void enregistrer(std::string nom, int score, int occupation, int nBonus)
     {
         std::cout<<"Probleme avec le fichier score.txt"<<std::endl; 
     }
+
+    XORscore();
 }
 
-char chiffrer(char a)
-{
-   if(a<26)
-   {
-        a+=102;
-   }
-   else
-   {
-       a-=26;
-   }
-   return a;
-}
-
-char dechiffrer(char a)
-{
-    if(a>101)
-    {
-        a-=102;
-    }
-    else
-    {
-        a+=26;
-    }
-    return a;
+string encryptDecrypt(string toEncrypt) {
+    char key = 'K'; //Any char will work
+    string output = toEncrypt;
+    
+    for (int i = 0; i < (int)toEncrypt.size(); i++)
+        output[i] = toEncrypt[i] ^ key;
+    
+    return output;
 }
 
 void actualiserTableau(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::vector<int> * tTaux, std::vector<int> * tBonus, vector<vector<sf::Text>> * tabText)
@@ -566,6 +577,7 @@ void actualiserTableau(std::vector<std::string> * tNom, std::vector<int> * tScor
 
 void getData(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::vector<int> * tTaux, std::vector<int> * tBonus)
 {
+    XORscore();
     ifstream fichier("score.txt");
 
     string ligne;
@@ -582,10 +594,7 @@ void getData(std::vector<std::string> * tNom, std::vector<int> * tScore,  std::v
         cout<<"Probleme avec le fichier score.txt"<<endl;
 
     
-    for(int i=0;i<(int)ligne.size();i++)
-    {
-        ligne[i]=dechiffrer(ligne[i]);
-    }
+    XORscore();
 
     string nom;
 
